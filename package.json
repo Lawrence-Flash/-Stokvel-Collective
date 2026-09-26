@@ -1,0 +1,22 @@
+{
+  "name": "stokvel-collective-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "dev:api": "pnpm --filter @stokvel/api dev",
+    "dev:web": "pnpm --filter @stokvel/web dev",
+    "db:migrate": "pnpm --filter @stokvel/database prisma migrate dev",
+    "db:push": "pnpm --filter @stokvel/database prisma db push",
+    "db:seed": "pnpm --filter @stokvel/database prisma db seed",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  }
+}
