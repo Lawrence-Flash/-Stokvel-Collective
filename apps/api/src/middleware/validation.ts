@@ -12,7 +12,7 @@ export const requestOtpSchema = z.object({
 
 export const verifyOtpSchema = z.object({
   phoneNumber: z.string().min(10, 'Valid phone number required'),
-  code: z.string().length(6, 'OTP must be 6 digits'),
+  code: z.string().regex(/^\d{6}$/, 'OTP must be 6 digits'),
 });
 
 export const redeemPayloadSchema = z.object({

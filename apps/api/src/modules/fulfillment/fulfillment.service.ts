@@ -1,8 +1,9 @@
 import { prisma, OrderStatus, PaymentStatus } from '@stokvel/database';
+import { isAuthorizedToRedeem, normalizeCollectionCode } from '../../domain/fulfillment';
 
 export class FulfillmentService {
   static async verifyAndRedeemCode(hubManagerId: string, collectionOtp: string) {
-    const cleanOtp = collectionOtp.trim().replace(/\s+/g, '');
+    const cleanOtp = normalizeCollectionCode(collectionOtp);
 
     const order = await prisma.order.findFirst({
       where: {
@@ -21,7 +22,7 @@ export class FulfillmentService {
       throw new Error('Invalid collection code or order not eligible for redemption');
     }
 
-    if (hubManagerId && order.hub.managerId !== hubManagerId) {
+    if (!isAuthorizedToRedeem(hubManagerId, order.hub.managerId)) {
       throw new Error('Unauthorized: Code must be redeemed at designated manager hub');
     }
 

@@ -1,5 +1,11 @@
 import { Queue, Worker } from 'bullmq';
-import { prisma, PoolStatus, PaymentStatus, OrderStatus } from '@stokvel/database';
+import { prisma, PoolStatus } from '@stokvel/database';
+import {
+  expiredPoolDecision,
+  lockFulfilledPool,
+  refundUnmetPool,
+  type SettlementWriter,
+} from '../domain/settlement';
 
 const connection = {
   host: process.env.REDIS_HOST || 'localhost',
@@ -27,35 +33,13 @@ export const poolWorker = new Worker(
       });
 
       for (const pool of expiredPools) {
-        if (pool.currentQuantity < pool.targetQuantity) {
-          // Unmet threshold: Cancel pool and initiate refunds
+        if (expiredPoolDecision(pool) === 'refund') {
           await prisma.$transaction(async (tx) => {
-            await tx.buyingPool.update({
-              where: { id: pool.id },
-              data: { status: PoolStatus.CANCELLED },
-            });
-
-            for (const order of pool.orders) {
-              await tx.order.update({
-                where: { id: order.id },
-                data: { status: OrderStatus.CANCELLED },
-              });
-
-              if (order.escrow) {
-                await tx.escrowTransaction.update({
-                  where: { id: order.escrow.id },
-                  data: { status: PaymentStatus.REFUNDED },
-                });
-              }
-            }
+            await refundUnmetPool(pool, tx as unknown as SettlementWriter);
           });
           console.log(`Pool ${pool.id} cancelled. Refunds triggered.`);
         } else {
-          // Threshold achieved: Lock pool for wholesale batch ordering
-          await prisma.buyingPool.update({
-            where: { id: pool.id },
-            data: { status: PoolStatus.LOCKED },
-          });
+          await lockFulfilledPool(pool.id, prisma as unknown as SettlementWriter);
           console.log(`Pool ${pool.id} target reached upon expiry. Locked for fulfillment.`);
         }
       }
