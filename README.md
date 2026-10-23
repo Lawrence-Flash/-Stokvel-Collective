@@ -92,7 +92,7 @@ The platform is designed with key requirements for township commerce:
 ### 1. Passwordless Phone OTP Authentication
 - Generates secure 6-digit one-time passcodes stored in Redis with 5-minute expiration.
 - Exchanges verified codes for signed JWT access tokens with 7-day lifespans.
-- Rate-limited to 5 requests per 15 minutes to prevent brute-forcing.
+- API routes are limited to 300 requests per 15 minutes. OTP requests, verification attempts, and profile reads are limited further (5, 5, and 100).
 
 ### 2. Buying Pool Engine & Atomic Transactions
 - Interactive progress visualization showing ordered units, target threshold, and savings percentage against retail.
