@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:20-alpine AS builder
+FROM node:25-alpine AS builder
 WORKDIR /app
 RUN npm install -g pnpm
 COPY package.json pnpm-workspace.yaml ./
@@ -11,7 +11,7 @@ RUN pnpm --filter @stokvel/database build
 RUN pnpm --filter @stokvel/api build
 
 # Stage 2: Runtime Execution
-FROM node:20-alpine AS runner
+FROM node:25-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 RUN npm install -g pnpm
