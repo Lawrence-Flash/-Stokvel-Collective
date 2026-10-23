@@ -1,4 +1,11 @@
 import { prisma, PoolStatus, OrderStatus, PaymentStatus } from '@stokvel/database';
+import {
+  assertContributionQuantity,
+  contributionAmount,
+  isPoolExpired,
+  nextPoolTotals,
+  statusAfterContribution,
+} from '../../domain/ledger';
 
 export class PoolService {
   static async listPools() {
@@ -30,6 +37,7 @@ export class PoolService {
   }
 
   static async placeOrder(userId: string, poolId: string, quantity: number) {
+    assertContributionQuantity(quantity);
     return await prisma.$transaction(async (tx) => {
       const pool = await tx.buyingPool.findUnique({
         where: { id: poolId },
@@ -40,13 +48,17 @@ export class PoolService {
         throw new Error('Buying pool is not active or available');
       }
 
-      if (new Date() > pool.expiresAt) {
+      if (isPoolExpired(pool.expiresAt)) {
         throw new Error('Buying pool period has expired');
       }
 
-      const itemCost = Number(pool.product.unitPrice) * quantity;
-      const updatedQuantity = pool.currentQuantity + quantity;
-      const updatedAmount = Number(pool.currentAmount) + itemCost;
+      const itemCost = contributionAmount(pool.product.unitPrice, quantity);
+      const { currentQuantity: updatedQuantity, currentAmount: updatedAmount } = nextPoolTotals(
+        pool.currentQuantity,
+        pool.currentAmount,
+        quantity,
+        itemCost,
+      );
 
       const order = await tx.order.create({
         data: {
@@ -76,13 +88,13 @@ export class PoolService {
         },
       });
 
-      const isTargetMet = updatedQuantity >= pool.targetQuantity;
+      const nextStatus = statusAfterContribution(updatedQuantity, pool.targetQuantity);
       await tx.buyingPool.update({
         where: { id: poolId },
         data: {
           currentQuantity: updatedQuantity,
           currentAmount: updatedAmount,
-          status: isTargetMet ? PoolStatus.LOCKED : PoolStatus.OPEN,
+          status: nextStatus === 'LOCKED' ? PoolStatus.LOCKED : PoolStatus.OPEN,
         },
       });
 

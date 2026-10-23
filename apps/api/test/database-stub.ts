@@ -1,0 +1,25 @@
+export const prisma = {};
+
+export const PoolStatus = {
+  DRAFT: 'DRAFT',
+  OPEN: 'OPEN',
+  LOCKED: 'LOCKED',
+  FULFILLED: 'FULFILLED',
+  CANCELLED: 'CANCELLED',
+};
+
+export const OrderStatus = {
+  PENDING_PAYMENT: 'PENDING_PAYMENT',
+  PAID: 'PAID',
+  READY_FOR_COLLECTION: 'READY_FOR_COLLECTION',
+  COLLECTED: 'COLLECTED',
+  CANCELLED: 'CANCELLED',
+};
+
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  HELD_IN_ESCROW: 'HELD_IN_ESCROW',
+  DISBURSED: 'DISBURSED',
+  REFUNDED: 'REFUNDED',
+  FAILED: 'FAILED',
+};

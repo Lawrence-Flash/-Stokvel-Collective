@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { AuthService } from '../modules/auth/auth.service';
-import { otpLimiter } from '../middleware/rateLimit';
+import { apiLimiter, otpLimiter, otpVerifyLimiter, profileLimiter } from '../middleware/rateLimit';
 import { validate, requestOtpSchema, verifyOtpSchema } from '../middleware/validation';
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth';
 import { prisma } from '@stokvel/database';
 
 const router = Router();
+
+router.use(apiLimiter);
 
 router.post(
   '/request-otp',
@@ -24,6 +26,7 @@ router.post(
 
 router.post(
   '/verify-otp',
+  otpVerifyLimiter,
   validate(verifyOtpSchema),
   async (req, res) => {
     try {
@@ -36,7 +39,7 @@ router.post(
   }
 );
 
-router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res) => {
+router.get('/me', profileLimiter, authenticateToken, async (req: AuthenticatedRequest, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.user?.userId },

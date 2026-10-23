@@ -5,6 +5,10 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   validate:
@@ -24,5 +28,13 @@ jobs:
         run: pnpm lint
       - name: Type Check
         run: pnpm typecheck
+      - name: Unit Tests
+        run: pnpm test
       - name: Build
         run: pnpm build
+      # Known high and critical advisories are in Next.js 14 and Vitest 1.
+      # Their fixes are major upgrades, so this step reports them without
+      # failing the job. Dependency Review blocks new vulnerable dependencies.
+      - name: Dependency audit
+        continue-on-error: true
+        run: pnpm audit --audit-level=high

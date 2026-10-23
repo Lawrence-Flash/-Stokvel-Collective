@@ -1,9 +1,12 @@
 import { Router } from 'express';
 import { FulfillmentService } from '../modules/fulfillment/fulfillment.service';
 import { validate, redeemPayloadSchema } from '../middleware/validation';
+import { apiLimiter } from '../middleware/rateLimit';
 import { prisma } from '@stokvel/database';
 
 const router = Router();
+
+router.use(apiLimiter);
 
 // Redeem collection voucher OTP
 router.post(

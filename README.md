@@ -2,7 +2,8 @@
 
 > Empowering South African township communities (stokvels) to pool purchasing power to buy fast-moving consumer goods (FMCG) directly from wholesale distributors at scale.
 
-[![CI Pipeline](https://github.com/Lawrence-Flash/-Stokvel-Collective/actions/workflows/ci.yml/badge.svg)](https://github.com/Lawrence-Flash/-Stokvel-Collective/actions)
+[![CI Pipeline](https://github.com/Lawrence-Flash/-Stokvel-Collective/actions/workflows/ci.yml/badge.svg)](https://github.com/Lawrence-Flash/-Stokvel-Collective/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Lawrence-Flash/-Stokvel-Collective/actions/workflows/codeql.yml/badge.svg)](https://github.com/Lawrence-Flash/-Stokvel-Collective/actions/workflows/codeql.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14+-black.svg)](https://nextjs.org/)
@@ -91,7 +92,7 @@ The platform is designed with key requirements for township commerce:
 ### 1. Passwordless Phone OTP Authentication
 - Generates secure 6-digit one-time passcodes stored in Redis with 5-minute expiration.
 - Exchanges verified codes for signed JWT access tokens with 7-day lifespans.
-- Rate-limited to 5 requests per 15 minutes to prevent brute-forcing.
+- API routes are limited to 300 requests per 15 minutes. OTP requests, verification attempts, and profile reads are limited further (5, 5, and 100).
 
 ### 2. Buying Pool Engine & Atomic Transactions
 - Interactive progress visualization showing ordered units, target threshold, and savings percentage against retail.
@@ -178,7 +179,7 @@ Access the web interface at: **[http://localhost:3005](http://localhost:3005)**.
 ```bash
 pnpm test
 ```
-Tests cover financial calculations, savings percentages, atomic order rejection on inactive pools, and validation.
+Vitest covers pool contributions and running balances, escrow holds, supplier disbursements, unmet-pool refunds, request validation, and phone-OTP / JWT helpers.
 
 ### Type Check & Build
 ```bash
@@ -188,6 +189,22 @@ pnpm typecheck
 # Build all packages and applications for production
 pnpm build
 ```
+
+---
+
+## 🔐 Security & CI
+
+Pushes and pull requests to `main` run a free pipeline. Nothing here needs GitHub Advanced Security or a paid scanner license.
+
+| Check | What runs |
+| --- | --- |
+| CI Pipeline | Frozen pnpm install, ESLint, TypeScript, Vitest, production build, and `pnpm audit` |
+| CodeQL | Static analysis for JavaScript/TypeScript and GitHub Actions workflows |
+| Dependency Review | Fails a pull request that introduces a known-vulnerable dependency |
+| Gitleaks | Secret scan of the full git history on a personal public repository (no license key) |
+| Dependabot | Weekly update PRs for npm, GitHub Actions, and Docker |
+
+`pnpm audit` currently reports existing high and critical advisories, mostly in Next.js 14 and Vitest 1. Those fixes are major upgrades, so the audit step prints the report and does not fail the job. Dependency Review still blocks new vulnerable dependencies. Local demo credentials in `.env.example` and the API's development JWT fallback are placeholders and should be replaced before any real deployment.
 
 ---
 

@@ -1,9 +1,12 @@
 import { Router } from 'express';
 import { PoolService } from '../modules/pool/pool.service';
 import { validate, orderPayloadSchema } from '../middleware/validation';
+import { apiLimiter } from '../middleware/rateLimit';
 import { prisma } from '@stokvel/database';
 
 const router = Router();
+
+router.use(apiLimiter);
 
 // List all pools
 router.get('/pools', async (_req, res) => {
