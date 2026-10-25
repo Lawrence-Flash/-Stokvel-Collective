@@ -14,11 +14,12 @@ async function getOrder(orderId: string) {
   }
 }
 
-export default async function VoucherPage({
-  params,
-}: {
-  params: { orderId: string };
-}) {
+export default async function VoucherPage(
+  props: {
+    params: Promise<{ orderId: string }>;
+  }
+) {
+  const params = await props.params;
   const order = await getOrder(params.orderId);
 
   // Fallback mock data if server isn't reached yet or order isn't found
