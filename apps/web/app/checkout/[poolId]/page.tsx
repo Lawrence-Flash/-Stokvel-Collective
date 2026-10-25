@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, ArrowLeft, CheckCircle2, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
@@ -24,7 +24,8 @@ interface PoolData {
   };
 }
 
-export default function CheckoutPage({ params }: { params: { poolId: string } }) {
+export default function CheckoutPage(props: { params: Promise<{ poolId: string }> }) {
+  const params = use(props.params);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [pool, setPool] = useState<PoolData | null>(null);

@@ -6,7 +6,7 @@
 [![CodeQL](https://github.com/Lawrence-Flash/-Stokvel-Collective/actions/workflows/codeql.yml/badge.svg)](https://github.com/Lawrence-Flash/-Stokvel-Collective/actions/workflows/codeql.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue.svg)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-14+-black.svg)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black.svg)](https://nextjs.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-336791.svg)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-7+-DC382D.svg)](https://redis.io/)
 
@@ -29,7 +29,7 @@ The platform is designed with key requirements for township commerce:
 ```text
 +-----------------------------------------------------------------------------------+
 |                                Client Layer (Web)                                 |
-|         Next.js 14+ (App Router) • Tailwind CSS • Lucide React • TanStack         |
+|         Next.js 15 (App Router) • Tailwind CSS • Lucide React • TanStack         |
 +-----------------------------------------+-----------------------------------------+
                                           | HTTP / REST / JSON
                                           v
@@ -68,7 +68,7 @@ The platform is designed with key requirements for township commerce:
 │   │   │   └── routes/        # Express route definitions
 │   │   ├── Dockerfile         # Multi-stage production container build
 │   │   └── vitest.config.ts   # Vitest unit test configuration
-│   └── web/                   # Next.js 14+ frontend application
+│   └── web/                   # Next.js 15 frontend application
 │       ├── app/
 │       │   ├── checkout/      # Group order checkout & Instant EFT simulation
 │       │   ├── manager/       # Hub Manager stock redemption portal
@@ -204,7 +204,7 @@ Pushes and pull requests to `main` run a free pipeline. Nothing here needs GitHu
 | Gitleaks | Secret scan of the full git history on a personal public repository (no license key) |
 | Dependabot | Weekly update PRs for npm, GitHub Actions, and Docker |
 
-`pnpm audit` currently reports existing high and critical advisories, mostly in Next.js 14 and Vitest 1. Those fixes are major upgrades, so the audit step prints the report and does not fail the job. Dependency Review still blocks new vulnerable dependencies. Local demo credentials in `.env.example` and the API's development JWT fallback are placeholders and should be replaced before any real deployment.
+`pnpm audit` currently reports 14 advisories (3 critical, 3 high, 7 moderate, 1 low). The remaining critical and high findings are Vitest 1, including its Vite and Tinypool dependencies, and Zod 3. Those fixes are major upgrades, so the audit step prints the report and does not fail the job. Dependency Review still blocks new vulnerable dependencies. Local demo credentials in `.env.example` and the API's development JWT fallback are placeholders and should be replaced before any real deployment.
 
 ---
 
